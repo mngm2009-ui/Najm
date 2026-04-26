@@ -3,148 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة تطوير ختم النسر الذكية</title>
+    <title>حاسبة ختم النسر - سيرفر 92</title>
     <style>
-        :root {
-            --gold: #f1c40f;
-            --orange: #f39c12;
-            --dark-bg: #121212;
-            --card-bg: #1e1e1e;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--dark-bg);
-            color: white;
+        :root { --gold: #ffd700; --orange: #ff8c00; --bg: #121212; --card-bg: #1e1e1e; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg); 
+            color: #e0e0e0; 
+            padding: 15px; 
+            min-height: 100vh; 
             display: flex;
             justify-content: center;
-            padding: 20px;
+            align-items: center;
             margin: 0;
+            position: relative;
         }
-        .calculator-card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+        .container { 
             width: 100%;
-            max-width: 500px;
+            max-width: 450px; 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 20px; 
+            border: 1px solid #333; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            text-align: center;
+        }
+
+        .header-section { margin-bottom: 20px; }
+        h1 { color: var(--gold); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 8px; font-size: 1.8rem; }
+        .credit { font-size: 0.8rem; color: #bbb; font-style: italic; }
+
+        .input-card {
+            background: #252525;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
             border: 1px solid #333;
         }
-        h1 { text-align: center; color: var(--gold); font-size: 24px; }
-        .input-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: #bbb; }
-        select, input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #444;
-            background: #2a2a2a;
-            color: white;
-            font-size: 16px;
-            outline: none;
+
+        .input-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--gold); font-size: 0.9rem; }
+        
+        select { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 8px; 
+            background: #333; 
+            color: white; 
+            border: 1px solid #555; 
+            text-align: center;
+            font-size: 1rem;
+            box-sizing: border-box;
+            cursor: pointer;
+            appearance: none; /* إزالة سهم المتصفح الافتراضي */
+            -webkit-appearance: none;
         }
-        select:focus { border-color: var(--gold); }
-        .result-area {
-            margin-top: 25px;
-            padding: 20px;
-            background: #252525;
-            border-radius: 15px;
-            border-right: 5px solid var(--gold);
-        }
-        .result-item {
-            display: flex;
-            justify-content: space-between;
+        select:focus { outline: none; border-color: var(--gold); }
+
+        .btn { 
+            width: 100%; 
+            background: var(--gold); 
+            color: #000; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            font-size: 1.2rem; 
+            cursor: pointer; 
             margin-bottom: 10px;
-            font-size: 18px;
         }
-        .price { font-weight: bold; color: #2ecc71; }
-        .pieces-count { color: var(--orange); font-weight: bold; }
+
+        .results { 
+            margin-top: 15px; 
+            padding: 20px; 
+            background: #000; 
+            border-radius: 15px; 
+            display: none; 
+            border-right: 6px solid var(--gold); 
+            text-align: right;
+        }
+        
+        .res-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem; border-bottom: 1px solid #222; padding-bottom: 5px; align-items: center; }
+        .res-line span:last-child { color: #fff; font-weight: bold; }
+        
+        .final-line { margin-top: 15px; text-align: center; background: #1a1a1a; padding: 10px; border-radius: 8px; }
+        .success-text { color: #32cd32; font-weight: bold; display: block; margin-bottom: 10px; text-align: center; font-size: 1.1rem; }
+        .total-val { color: var(--gold); font-size: 1.8rem; font-weight: bold; }
+
+        .footer-signature { position: fixed; bottom: 10px; left: 15px; font-size: 0.65rem; color: #444; direction: ltr; }
     </style>
 </head>
 <body>
 
-<div class="calculator-card">
-    <h1>🦅 حاسبة ختم النسر</h1>
-    
-    <div class="input-group">
-        <label>نوع الختم (الفئة):</label>
-        <select id="sealType" onchange="calculate()">
-            <option value="20">ختم برتقالي (20$)</option>
-            <option value="30">ختم برتقالي+ (30$)</option>
-            <option value="50">ختم ذهبي (50$)</option>
-        </select>
+<div class="container">
+    <div class="header-section">
+        <h1>🦅 حاسبة ختم النسر</h1>
+        <div class="credit">تم البرمجه خاص لسيرفر 92 مع الحب ❤️</div>
     </div>
 
-    <div class="input-group">
-        <label>المستوى الحالي لديك:</label>
-        <select id="currentLevel" onchange="calculate()">
-            <option value="0">مستوى 0</option>
-            <option value="1">مستوى 10</option>
-            <option value="2">مستوى 20</option>
-            <option value="3">مستوى 25</option>
-            <option value="4">مستوى 30</option>
-            <option value="5">مستوى 35</option>
-            <option value="6">مستوى 40</option>
-            <option value="7">مستوى 45</option>
-            <option value="8">مستوى 50</option>
-        </select>
-    </div>
-
-    <div class="input-group">
-        <label>المستوى الذي تريد الوصول إليه:</label>
-        <select id="targetLevel" onchange="calculate()">
-            <option value="1">مستوى 10</option>
-            <option value="2">مستوى 20</option>
-            <option value="3">مستوى 25</option>
-            <option value="4">مستوى 30</option>
-            <option value="5">مستوى 35</option>
-            <option value="6">مستوى 40</option>
-            <option value="7">مستوى 45</option>
-            <option value="8" selected>مستوى 50</option>
-        </select>
-    </div>
-
-    <div class="result-area">
-        <div class="result-item">
-            <span>القطع المطلوبة:</span>
-            <span class="pieces-count" id="neededPieces">0</span>
+    <div class="input-card">
+        <div class="input-group">
+            <label>نوع الختم (الفئة):</label>
+            <select id="sealType">
+                <option value="20">ختم برتقالي (20$)</option>
+                <option value="30">ختم برتقالي+ (30$)</option>
+                <option value="50">ختم ذهبي (50$)</option>
+            </select>
         </div>
-        <div class="result-item" style="border-top: 1px solid #444; pt-10px; margin-top: 10px;">
-            <span>التكلفة الإجمالية:</span>
-            <span class="price" id="totalCost">0$</span>
+
+        <div class="input-group">
+            <label>المستوى الحالي لديك:</label>
+            <select id="currentLevel">
+                <option value="0">مستوى 0</option>
+                <option value="1">مستوى 10</option>
+                <option value="2">مستوى 20</option>
+                <option value="3">مستوى 25</option>
+                <option value="4">مستوى 30</option>
+                <option value="5">مستوى 35</option>
+                <option value="6">مستوى 40</option>
+                <option value="7">مستوى 45</option>
+                <option value="8">مستوى 50</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>المستوى المطلوب الوصول إليه:</label>
+            <select id="targetLevel">
+                <option value="1">مستوى 10</option>
+                <option value="2">مستوى 20</option>
+                <option value="3">مستوى 25</option>
+                <option value="4">مستوى 30</option>
+                <option value="5">مستوى 35</option>
+                <option value="6">مستوى 40</option>
+                <option value="7">مستوى 45</option>
+                <option value="8" selected>مستوى 50</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn" onclick="calculate()">تحليل التكاليف 💰</button>
+
+    <div id="result-box" class="results">
+        <span class="success-text">تم الحساب بنجاح ✅</span>
+        
+        <div class="res-line">
+            <span>نطاق التطوير:</span>
+            <span id="rangeText" style="font-size:0.8rem; color:var(--gold) !important;"></span>
+        </div>
+
+        <div class="res-line">
+            <span>القطع المطلوبة:</span>
+            <span id="neededPieces" style="color:var(--orange) !important;">0</span>
+        </div>
+
+        <div class="final-line">
+            <div style="color: #aaa; font-size: 0.8rem; margin-bottom: 5px;">التكلفة الإجمالية المطلوبة:</div>
+            <div class="total-val" id="totalCost">0$</div>
         </div>
     </div>
 </div>
 
+<div class="footer-signature">برمجه وتنفيذ الشيخ اعدام 92</div>
+
 <script>
-    // مصفوفة تمثل القطع المطلوبة لكل نقلة بالترتيب
-    // [0-10, 10-20, 20-25, 25-30, 30-35, 35-40, 40-45, 45-50]
     const pieceSteps = [1, 1, 3, 5, 8, 11, 14, 18];
+    const levelNames = ["0", "10", "20", "25", "30", "35", "40", "45", "50"];
 
     function calculate() {
         const currentIdx = parseInt(document.getElementById('currentLevel').value);
         const targetIdx = parseInt(document.getElementById('targetLevel').value);
         const pricePerPiece = parseInt(document.getElementById('sealType').value);
         
-        let totalPieces = 0;
+        if (targetIdx <= currentIdx) {
+            alert("يرجى اختيار مستوى مطلوب أعلى من مستواك الحالي");
+            return;
+        }
 
-        if (targetIdx > currentIdx) {
-            // حساب مجموع القطع بين المستويين المختاريين
-            for (let i = currentIdx; i < targetIdx; i++) {
-                totalPieces += pieceSteps[i];
-            }
-        } else {
-            totalPieces = 0; // إذا كان المختار أقل من الحالي
+        let totalPieces = 0;
+        for (let i = currentIdx; i < targetIdx; i++) {
+            totalPieces += pieceSteps[i];
         }
 
         const totalCost = totalPieces * pricePerPiece;
 
         // تحديث الواجهة
+        document.getElementById('result-box').style.display = "block";
+        document.getElementById('rangeText').innerText = "من لفل " + levelNames[currentIdx] + " إلى لفل " + levelNames[targetIdx];
         document.getElementById('neededPieces').innerText = totalPieces + " قطعة";
-        document.getElementById('totalCost').innerText = totalCost + "$";
+        document.getElementById('totalCost').innerText = totalCost.toLocaleString() + "$";
     }
-
-    // تشغيل الحسبة عند أول تحميل للملف
-    calculate();
 </script>
 
 </body>
